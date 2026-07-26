@@ -251,7 +251,7 @@ func (f *filePickerOverlay) handleMouse(msg tea.MouseMsg) Outcome {
 	case tea.MouseButtonLeft:
 		return f.handleLeftClick(msg.X, msg.Y)
 	default:
-		// Other mouse buttons and horizontal wheels are intentionally ignored.
+		// other mouse buttons and horizontal wheels are intentionally ignored
 	}
 	return Outcome{Kind: OutcomeNone}
 }

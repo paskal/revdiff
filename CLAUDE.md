@@ -16,7 +16,7 @@ TUI for reviewing diffs, files, and documents with inline annotations, built wit
 - `app/` - composition root (`package main`), split by concern: `main.go` (entrypoint + `run()`), `config.go` (options/parsing), `stdin.go` (stdin mode), `renderer_setup.go` (VCS wiring), `themes.go` (theme CLI + adapter), `history_save.go` (session save)
 - `app/diff/` - VCS interaction (git + hg + jj), unified diff parsing, VCS detection, Mercurial + Jujutsu support. `compare.go` — `CompareReader` renderer for `--compare-old/--compare-new` (runs `git diff --no-index`, no repo required)
 - `app/ui/` - bubbletea TUI package. Single `Model` struct with state grouped into sub-structs (`cfg`, `layout`, `file`, `modes`, `nav`, `search`, `annot`), methods split across files by concern (~500 lines each). Each source file has a matching `_test.go`. See `app/ui/doc.go` for package docs, `docs/ARCHITECTURE.md` for file-by-file breakdown. Does not import `app/theme` or `app/fsutil` — theme operations go through the `ThemeCatalog` interface
-- `app/ui/style/` - color/style resolution: hex-to-ANSI, lipgloss styles, SGR tracking, HSL math. Types: `Resolver`, `Renderer`, `SGR`
+- `app/ui/style/` - color/style resolution: hex-to-ANSI, lipgloss styles, SGR tracking, HSL math. Types: `Resolver`, `Renderer`, `SGR`. Also `display.go` - package-level `SanitizeFilenameForDisplay` and `TruncateLeftToWidth`, the shared helpers every filename-rendering surface must route through
 - `app/ui/sidepane/` - file tree + markdown TOC components with cursor/offset management
 - `app/ui/worddiff/` - intra-line word-diff: tokenizer, LCS, line pairing, highlight insertion
 - `app/ui/overlay/` - layered popups: help, annotation list, theme selector, file picker. Manager enforces one-at-a-time

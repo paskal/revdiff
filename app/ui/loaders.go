@@ -519,7 +519,7 @@ func (m Model) handleFileLoaded(msg fileLoadedMsg) (tea.Model, tea.Cmd) {
 	if msg.seq != m.file.loadSeq {
 		return m, nil
 	}
-	// Sequence equality alone is not enough when navigation returns to the
+	// sequence equality alone is not enough when navigation returns to the
 	// already displayed file without issuing another load. Reject the exact
 	// outstanding request canceled by that no-load selection.
 	if msg.seq == m.file.canceledLoadSeq && msg.file == m.file.canceledLoadPath {

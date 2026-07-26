@@ -135,14 +135,16 @@ Methods remain on `Model` — the sub-structs group mutable state for clarity, n
 
 **Theme boundary** — `app/ui` does not import `app/theme` or `app/fsutil`. Theme discovery and persistence are accessed through the `ThemeCatalog` interface (defined in `model.go`), with a concrete adapter wired in `app/themes.go`.
 
-### app/ui/style/ — color and style resolution
+### app/ui/style/ — color, style resolution, and display helpers
 
-Owns all hex-to-ANSI conversion, lipgloss style construction, SGR state tracking, HSL color math, and semantic color accessors.
+Owns all hex-to-ANSI conversion, lipgloss style construction, SGR state tracking, HSL color math, and semantic color accessors, plus the shared filename-display helpers every path-rendering surface routes through.
 
 Three main types:
 - **`Resolver`** — static and runtime style/color lookups. Methods: `Color()`, `Style()`, `LineBg()`, `LineStyle()`, `WordDiffBg()`, `IndicatorBg()`
 - **`Renderer`** — compound ANSI rendering for elements that need raw ANSI (not lipgloss). Methods: `AnnotationInline()`, `DiffCursor()`, `StatusBarSeparator()`, `FileStatusMark()`, `FileReviewedMark()`, `FileAnnotationMark()`
 - **`SGR`** — ANSI SGR stream processor. `Reemit()` re-prepends active fg/bg/bold/italic state at continuation line starts (needed for wrap mode because `ansi.Wrap` doesn't preserve SGR across newlines)
+
+`display.go` holds two package-level functions rather than methods on those types: `SanitizeFilenameForDisplay()` strips control, ANSI/OSC, and bidi sequences out of repository-supplied filenames, and `TruncateLeftToWidth()` left-truncates with an ellipsis. Both are shared by the diff-pane header, the status bar, and the file picker; any new filename-rendering surface must route through them.
 
 ### app/ui/sidepane/ — left-pane navigation
 
@@ -244,7 +246,7 @@ All consumer-side — defined in `app/ui/model.go`, not in implementor packages 
 | `styleRenderer` | `AnnotationInline()`, `DiffCursor()`, `StatusBarSeparator()`, `FileStatusMark()`, `FileReviewedMark()`, `FileAnnotationMark()` | `style.Renderer` |
 | `sgrProcessor` | `Reemit()` | `style.SGR` |
 | `wordDiffer` | `ComputeIntraRanges()`, `PairLines()`, `InsertHighlightMarkers()` | `worddiff.Differ` |
-| `FileTreeComponent` | 17 methods (navigation, query, mutation, scroll-state, render) | `sidepane.FileTree` |
+| `FileTreeComponent` | 27 methods (navigation, query, mutation, scroll-state, render) | `sidepane.FileTree` |
 | `TOCComponent` | 9 methods (navigation, cursor/section query+set, scroll-state, render) | `sidepane.TOC` |
 | `overlayManager` | `Active()`, `Kind()`, `OpenHelp()`, `OpenAnnotList()`, `OpenThemeSelect()`, `OpenFilePicker()`, `OpenInfo()`, `UpdateInfo()`, `Close()`, `HandleKey()`, `HandleMouse()`, `Compose()` | `overlay.Manager` |
 | `ThemeCatalog` | `Entries()`, `Resolve()`, `Persist()` | `themeCatalog` adapter in `app/themes.go` (composes `theme.Catalog` + config persistence) |
