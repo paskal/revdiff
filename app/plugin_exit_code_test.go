@@ -1139,6 +1139,8 @@ func cleanOverlayEnv() map[string]string {
 		"INSIDE_EMACS":          "",
 		"AGTERM_SESSION_ID":     "",
 		"AGTERM_SOCKET":         "",
+		"REVDIFF_TMUX_WINDOW":   "",
+		"AGENTDECK_INSTANCE_ID": "",
 		"REVDIFF_CONFIG":        "",
 	}
 }
