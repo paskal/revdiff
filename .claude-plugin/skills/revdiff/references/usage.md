@@ -227,6 +227,7 @@ Horizontal wheel, right-click, middle-click, drag selection, and clicks on the s
 
 - **kitty**: hold `Ctrl+Shift` while dragging
 - **iTerm2**: hold `Option` while dragging
+- **ghostty** (and ghostty-based terminals such as agterm): hold `Shift` while dragging. Ghostty also uses `Shift` to *extend* an existing selection, so if text is already selected the drag grows that selection instead of starting a new one - clear it first. Ghostty 1.3.0+ additionally has a `toggle_mouse_reporting` keybind, unbound by default, which suspends mouse capture without restarting revdiff
 - **most other terminals**: hold `Shift` while dragging
 
 Because the tree pane is rendered alongside the diff on the same rows, multi-line Shift+drag will include tree content. For clean copies of diff text, use your terminal's block-select mode (Option+drag in iTerm2, Ctrl+Shift+drag in kitty) or run with `--no-mouse` to disable mouse capture entirely.
