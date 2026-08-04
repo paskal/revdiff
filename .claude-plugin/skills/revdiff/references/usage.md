@@ -312,6 +312,20 @@ Use `--output` / `-o` flag to write annotations to a file instead of stdout.
 
 Exit status: `0` = no annotations, discarded annotations, or default mode; `10` = annotations were produced with `--exit-code-on-annotations`, `REVDIFF_EXIT_CODE_ON_ANNOTATIONS`, or `exit-code-on-annotations`; `1` = real errors. Agent launchers set `REVDIFF_EXIT_CODE_ON_ANNOTATIONS` and treat `10` as success-with-annotations.
 
+## Asking Questions Instead of Directives
+
+An annotation is normally an instruction to change code. To ask about the code instead, put `??` anywhere in the text, or open with `explain`, `remind`, `describe`, `what is`, `what are`, `how does`, `how do` or `clarify` (case-insensitive). `??` is the language-neutral form and works whatever language you write in.
+
+```
+## renderer.go:142 (+)
+why a pointer here??
+
+## store.go:88 (-)
+explain what this lock protects
+```
+
+The agent answers as a markdown document and reopens it in revdiff via `--only`, with a TOC sidebar. Annotate that document to ask follow-ups and it is refined and reopened; the loop ends when you quit without annotating. Code-change annotations from the same batch are held and applied after the explanation loop finishes. Applies to the Claude and Codex plugins; the Pi package classifies questions the same way but answers them in chat.
+
 ## Preloading Annotations
 
 Use `--annotations=PATH` to preload the annotation store from a markdown file in the same `-o` format. The format is bidirectional: any file written by `-o` can be read back via `--annotations` for round-trip workflows — review, quit, edit the file externally, relaunch, and continue from the preloaded state.

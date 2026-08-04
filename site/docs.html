@@ -732,6 +732,13 @@ map alt+t&gt;n theme_select</code></div>
 "switch revdiff to dracula theme"   <span class="code-comment">-- modify config via conversation</span></code></div>
         <p>The plugin includes built-in reference documentation and can answer questions about revdiff usage, themes, keybindings, and configuration. It can also create or modify the local config file on request.</p>
         <p>The plugin supports the full review loop: annotate &rarr; plan &rarr; fix &rarr; re-review until no more annotations remain. The bundled launcher treats exit code <code>10</code> as success-with-annotations and processes stdout normally.</p>
+        <p><strong>Ask instead of instruct:</strong> an annotation containing <code>??</code> anywhere in its text is treated as a question rather than a directive, so the agent explains that code instead of changing it. Openers <code>explain</code>, <code>remind</code>, <code>describe</code>, <code>what is</code>, <code>what are</code>, <code>how does</code>, <code>how do</code> and <code>clarify</code> do the same. <code>??</code> is the language-neutral form and works whatever you write in.</p>
+        <div class="code-block"><code>## renderer.go:142 (+)
+why a pointer here??
+
+## store.go:88 (-)
+explain what this lock protects</code></div>
+        <p>The answer comes back as a markdown document reopened in revdiff, with a TOC sidebar, so you can annotate the explanation itself to ask follow-ups. That loop repeats until you quit without annotating. Any code-change annotations from the same batch are held and applied afterwards. The Codex plugin behaves the same way; the Pi package classifies questions too but answers them in chat.</p>
 
         <h2 id="plugin-autodetect">Auto-detection</h2>
         <p>When no ref is provided, the plugin detects what to review automatically:</p>

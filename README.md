@@ -161,6 +161,18 @@ The plugin includes built-in reference documentation and can answer questions ab
 
 The plugin supports the full review loop: annotate → plan → fix → re-review until no more annotations remain. The bundled launcher treats exit code `10` as success-with-annotations and processes stdout normally.
 
+**Ask instead of instruct:** an annotation containing `??` anywhere in its text is treated as a question rather than a directive, so the agent explains that code instead of changing it. Openers `explain`, `remind`, `describe`, `what is`, `what are`, `how does`, `how do` and `clarify` do the same. `??` is the language-neutral form and works whatever you write in.
+
+```
+## renderer.go:142 (+)
+why a pointer here??
+
+## store.go:88 (-)
+explain what this lock protects
+```
+
+The answer comes back as a markdown document reopened in revdiff, with a TOC sidebar, so you can annotate the explanation itself to ask follow-ups. That loop repeats until you quit without annotating. Any code-change annotations from the same batch are held and applied afterwards. The Codex plugin behaves the same way; the Pi package classifies questions too but answers them in chat.
+
 **Custom launchers:** the Claude diff-review skill and the cross-runtime planning plugin resolve launchers through a two-layer chain (user → bundled). Claude uses `${CLAUDE_PLUGIN_DATA}/scripts/<launcher>`; the Codex planning hook uses `${PLUGIN_DATA}/scripts/launch-plan-review.sh`. There is no project-level executable override by design because these hooks auto-fire in any opened repository. See `.claude-plugin/skills/revdiff/references/install.md` for diff review and [plugins/revdiff-planning/README.md](plugins/revdiff-planning/README.md) for plan review.
 
 ### Plan Review Plugin
