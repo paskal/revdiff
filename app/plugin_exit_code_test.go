@@ -237,8 +237,11 @@ func TestIterm2OverlayNamesSession(t *testing.T) {
 			require.NoError(t, err)
 			calls := strings.Split(strings.TrimSpace(string(raw)), "\n")
 			require.NotEmpty(t, calls)
-			// the title is the last argv item so the stub's positional dispatch
-			// on the launch script keeps matching
+			// the title is the last argv item, so the launch script stays at position 3 and the
+			// stub's -x "$3" test still matches. the two launch-revdiff.sh calls go 5 -> 6 args and
+			// stay in the >=5 branch where the trailing title is dropped; launch-plan-review.sh goes
+			// 4 -> 5 and crosses into that branch, so the stub hands its launch script the title as
+			// $2 while production passes the sentinel alone — that heredoc must keep reading $1 only
 			assert.True(t, strings.HasSuffix(calls[0], " "+launcher.title),
 				"split osascript argv should end with the overlay title, got %q", calls[0])
 		})
