@@ -114,14 +114,25 @@ func (m *Model) moveDiffCursorUpWithHunks(hunks []int) {
 // keeps the cursor's relative screen position stable by scrolling both
 // cursor and viewport by the same amount.
 func (m *Model) moveDiffCursorPageDown() {
-	m.moveDiffCursorDownBy(m.layout.viewport.Height)
+	m.moveDiffCursorDownBy(m.pageRows())
 }
 
 // moveDiffCursorPageUp moves the diff cursor up by one visual page.
 // keeps the cursor's relative screen position stable by scrolling both
 // cursor and viewport by the same amount.
 func (m *Model) moveDiffCursorPageUp() {
-	m.moveDiffCursorUpBy(m.layout.viewport.Height)
+	m.moveDiffCursorUpBy(m.pageRows())
+}
+
+// pageRows returns how far a full-page motion advances, one screen less the
+// configured overlap. the overlap is approximate rather than exact, and deviates in both
+// directions: the walk stops on cursor positions and one position can span several rendered
+// rows (a wrapped line, an annotation block), so a tall line at the page edge carries over
+// more than requested when the walk rolls back off it, and less than requested - down to
+// rows skipped unseen - when worthRollingBack accepts it whole.
+// half-page motions do not subtract it - they already retain half a screen.
+func (m Model) pageRows() int {
+	return max(1, m.layout.viewport.Height-m.modes.pageOverlap)
 }
 
 // moveDiffCursorHalfPageDown moves the diff cursor down by half a visual page.
