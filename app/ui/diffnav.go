@@ -901,17 +901,28 @@ func (m *Model) syncTOCActiveSection() {
 	}
 }
 
+// positionOnFirstChange puts the cursor on the first changed line, falling back to the first visible
+// line when the file carries no hunks at all (context-only sources). in collapsed mode it lands on
+// the delete-only placeholder rather than skipping the hunk, since that head line stays visible.
+//
+// this only positions the cursor: a caller loading a new file MUST follow it with
+// centerViewportOnCursor and must not drop that call as a duplicate render. moveToNextHunk scrolls
+// via centerHunkInViewport, which sets the offset before rendering, so the offset clamps against the
+// previously loaded file's length; on the no-hunk path nothing renders at all.
+func (m *Model) positionOnFirstChange() {
+	m.nav.diffCursor = -1
+	m.moveToNextHunk()
+	if m.nav.diffCursor == -1 {
+		m.skipInitialDividers()
+	}
+}
+
 // applyPendingHunkJump moves the cursor to the first or last hunk after a cross-file navigation.
 func (m *Model) applyPendingHunkJump() {
 	forward := *m.nav.pendingHunkJump
 	m.nav.pendingHunkJump = nil
 	if forward {
-		m.nav.diffCursor = -1
-		m.moveToNextHunk()
-		if m.nav.diffCursor != -1 {
-			return
-		}
-		m.skipInitialDividers()
+		m.positionOnFirstChange()
 		return
 	}
 
