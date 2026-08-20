@@ -192,7 +192,7 @@ $SCRIPT_DIR/launch-revdiff.sh --only=<file>
    ```
 4. If the output file has content, process it as annotations below. If it is empty or missing, fall back to the durable review history, which survives even when the launcher's cleanup removed the temp file: run `$SCRIPT_DIR/read-latest-history.sh` and process the annotations from its `## Annotations` section (see "Using Existing Review History"). Only if both are empty did the user quit without annotating.
 
-This fallback is safe because revdiff writes the output file atomically on exit, and the history entry is complete before the process exits — there is never a partial read.
+Both reads return complete content: revdiff writes the output file atomically on exit, and the history entry is complete before the process exits. That guarantees no partial read, not that the file belongs to this review: with two reviews live under one `$TMPDIR`, the newest match may belong to the other one.
 
 A reviewer may also keep revdiff open on purpose and press `O` to flush the current annotations to the same output file mid-session, without quitting. The flush uses the same atomic write, so the fallback read above still returns a complete file. When the user says something like "I flushed my notes, go ahead" while the overlay is still open, read the most recent output file exactly as in the timeout fallback and process the annotations; do NOT relaunch revdiff. After you finish the code changes, the reviewer reloads with `R` and continues in the same session. No launcher flags change for this — the launcher already passes an output file, and `O` reuses it.
 
